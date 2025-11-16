@@ -1,5 +1,6 @@
 package com.nextgen.platform.task.service;
 
+import com.nextgen.platform.audit.service.TaskEventService;
 import com.nextgen.platform.task.dao.TaskDAO;
 import com.nextgen.platform.task.domain.Task;
 import com.nextgen.platform.task.dto.TaskSearchRequest;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.InvalidParameterException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -22,12 +24,20 @@ import java.util.Objects;
 public class TaskService {
     @Autowired
     private TaskDAO taskDAO;
+    @Autowired
+    private TaskEventService taskEventService;
 
    public Task createTask(@RequestBody Task task) {
        if(Objects.isNull(task)) {
            return null;
        }
-       return taskDAO.createTask(task);
+       Task createdTask = taskDAO.createTask(task);
+       if(Objects.nonNull(createdTask)) {
+           taskEventService.recordCreated(task.getAssignedTo(),
+                   createdTask.getId().toString(),
+                   createTaskDetail(createdTask));
+       }
+       return createdTask;
     }
 
     public Task updateTask(Long id, Task task) {
@@ -35,7 +45,13 @@ public class TaskService {
           return null;
        }
         task.setId(id);
-        return taskDAO.updateTask(task);
+        Task updatedTask =  taskDAO.updateTask(task);
+        if(Objects.nonNull(updatedTask)) {
+            taskEventService.recordUpdated(task.getAssignedTo(),
+                    updatedTask.getId().toString(),
+                    createTaskDetail(updatedTask));
+        }
+        return updatedTask;
     }
 
     public Task getTaskById(Long id) {
@@ -58,11 +74,36 @@ public class TaskService {
 
     public boolean deleteTask(Long id) {
         log.debug("Delete task with id {}", id);
-        return taskDAO.deleteTask(id);
+        //get the task to publish audit events
+        Task task = taskDAO.getTaskById(id);
+        if(Objects.isNull(task)) {
+            return false;
+        }
+        boolean isDeleted = taskDAO.deleteTask(id);
+        if(isDeleted) {
+            taskEventService.recordDeleted(task.getAssignedTo(), id.toString());
+        }
+        return isDeleted;
     }
 
     public boolean activateTask(Long id) {
         log.debug("Activate task with id {}", id);
-        return taskDAO.activateTask(id);
+        boolean isActivated = taskDAO.activateTask(id);
+        if(isActivated) {
+            Task task = taskDAO.getTaskById(id);
+            if(Objects.nonNull(task)) {
+                taskEventService.recordActivated(task.getAssignedTo(), id.toString());
+            }
+        }
+        return isActivated;
+    }
+
+    private static Map<String, String> createTaskDetail(Task createdTask) {
+        return Map.of("title", createdTask.getTitle(),
+                "description", createdTask.getDescription(),
+                "status", Objects.nonNull(createdTask.getStatus())?createdTask.getStatus().toString():"",
+                "priority", Objects.nonNull(createdTask.getPriority())?createdTask.getPriority().toString():"",
+                "dueDate", Objects.nonNull(createdTask.getDueDate())?createdTask.getDueDate().toString():""
+        );
     }
 }

@@ -3,6 +3,7 @@ package com.nextgen.platform.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
@@ -20,6 +21,13 @@ public class DBConfig {
     public DynamoDbClient dynamoDbClient() {
         return DynamoDbClient.builder()
                 .region(Region.US_EAST_2) // Ohio region
+                .build();
+    }
+
+    @Bean
+    public DynamoDbEnhancedClient enhancedClient(DynamoDbClient client) {
+        return DynamoDbEnhancedClient.builder()
+                .dynamoDbClient(client)
                 .build();
     }
 }
