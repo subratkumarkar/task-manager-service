@@ -1,7 +1,7 @@
-package com.nextgen.task.dao;
+package com.nextgen.platform.task.dao;
 
-import com.nextgen.task.dto.SortByField;
-import com.nextgen.task.dto.TaskSearchRequest;
+import com.nextgen.platform.task.dto.SortByField;
+import com.nextgen.platform.task.dto.TaskSearchRequest;
 import org.springframework.util.StringUtils;
 
 

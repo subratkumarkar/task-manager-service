@@ -1,4 +1,4 @@
-package com.nextgen.task.dto;
+package com.nextgen.platform.task.dto;
 import java.util.Objects;
 
 public enum SortByField {

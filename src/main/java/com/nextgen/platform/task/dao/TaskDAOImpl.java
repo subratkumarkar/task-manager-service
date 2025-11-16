@@ -1,10 +1,11 @@
-package com.nextgen.task.dao;
+package com.nextgen.platform.task.dao;
 
-import com.nextgen.task.domain.Task;
-import com.nextgen.task.domain.TaskPriority;
-import com.nextgen.task.domain.TaskStatus;
-import com.nextgen.task.dto.TaskSearchRequest;
+import com.nextgen.platform.task.domain.Task;
+import com.nextgen.platform.task.domain.TaskPriority;
+import com.nextgen.platform.task.domain.TaskStatus;
+import com.nextgen.platform.task.dto.TaskSearchRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -22,10 +23,8 @@ import java.util.*;
 public class TaskDAOImpl implements TaskDAO {
     private static String DELETE_SQL = "UPDATE user_tasks set deleted=:deleted WHERE id = :id";
 
-    private final NamedParameterJdbcTemplate jdbcTemplate;
-    public TaskDAOImpl(NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Override
     public Task getTaskById(Long id) {

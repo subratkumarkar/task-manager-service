@@ -1,4 +1,4 @@
-package com.nextgen.task.domain;
+package com.nextgen.platform.task.domain;
 
 public enum TaskStatus {
     PENDING,

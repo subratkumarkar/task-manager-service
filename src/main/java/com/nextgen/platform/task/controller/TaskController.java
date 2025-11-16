@@ -1,10 +1,10 @@
-package com.nextgen.task.controller;
+package com.nextgen.platform.task.controller;
 
 import java.util.List;
-import com.nextgen.task.dao.TaskDAO;
-import com.nextgen.task.domain.Task;
-import com.nextgen.task.dto.TaskSearchRequest;
-import com.nextgen.task.service.TaskService;
+
+import com.nextgen.platform.task.domain.Task;
+import com.nextgen.platform.task.dto.TaskSearchRequest;
+import com.nextgen.platform.task.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

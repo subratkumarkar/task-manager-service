@@ -1,4 +1,4 @@
-package com.nextgen.task.config;
+package com.nextgen.platform.config;
 
 import org.springframework.context.annotation.*;
 import org.springframework.web.servlet.config.annotation.*;

@@ -1,7 +1,7 @@
-package com.nextgen.task.dao;
+package com.nextgen.platform.task.dao;
 
-import com.nextgen.task.domain.Task;
-import com.nextgen.task.dto.TaskSearchRequest;
+import com.nextgen.platform.task.domain.Task;
+import com.nextgen.platform.task.dto.TaskSearchRequest;
 
 import java.util.List;
 

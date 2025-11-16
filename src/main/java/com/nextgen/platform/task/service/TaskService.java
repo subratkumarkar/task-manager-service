@@ -1,8 +1,8 @@
-package com.nextgen.task.service;
+package com.nextgen.platform.task.service;
 
-import com.nextgen.task.dao.TaskDAO;
-import com.nextgen.task.domain.Task;
-import com.nextgen.task.dto.TaskSearchRequest;
+import com.nextgen.platform.task.dao.TaskDAO;
+import com.nextgen.platform.task.domain.Task;
+import com.nextgen.platform.task.dto.TaskSearchRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

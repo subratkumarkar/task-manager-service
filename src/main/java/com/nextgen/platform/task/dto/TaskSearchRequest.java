@@ -1,8 +1,7 @@
-package com.nextgen.task.dto;
+package com.nextgen.platform.task.dto;
 
-import com.nextgen.task.domain.Task;
-import com.nextgen.task.domain.TaskPriority;
-import com.nextgen.task.domain.TaskStatus;
+import com.nextgen.platform.task.domain.TaskPriority;
+import com.nextgen.platform.task.domain.TaskStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;
