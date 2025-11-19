@@ -1,5 +1,6 @@
 # task-manager-service
 Manages Task lifecycle.
+
 User can create personal tasks in the dashboard
 after creating an account and logging in.
 The tasks created by an user is only visible
