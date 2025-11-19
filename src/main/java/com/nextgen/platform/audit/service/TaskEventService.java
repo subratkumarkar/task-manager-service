@@ -38,12 +38,8 @@ public class TaskEventService {
         recordTaskEvent(userId, taskId, TaskEventStatus.UPDATED.name(), details);
     }
 
-    public void recordDeleted(String userId, String taskId) {
+    public void recordDeleted(String userId, String taskId, Map<String, String> details) {
         recordTaskEvent(userId, taskId, TaskEventStatus.DELETED.name(), Map.of());
-    }
-
-    public void recordActivated(String userId, String taskId) {
-        recordTaskEvent(userId, taskId, TaskEventStatus.ACTIVATED.name(), Map.of());
     }
 }
 

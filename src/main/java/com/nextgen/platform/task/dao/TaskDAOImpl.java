@@ -1,6 +1,7 @@
 package com.nextgen.platform.task.dao;
 
 import com.nextgen.platform.task.domain.Task;
+import com.nextgen.platform.task.domain.TaskContainer;
 import com.nextgen.platform.task.domain.TaskPriority;
 import com.nextgen.platform.task.domain.TaskStatus;
 import com.nextgen.platform.task.dto.TaskSearchRequest;
@@ -13,6 +14,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
@@ -21,7 +23,7 @@ import java.util.*;
 @Slf4j
 @Repository
 public class TaskDAOImpl implements TaskDAO {
-    private static String DELETE_SQL = "UPDATE user_tasks set deleted=:deleted WHERE id = :id";
+    private static String DELETE_SQL = "DELETE from user_tasks WHERE id = :id";
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -45,32 +47,44 @@ public class TaskDAOImpl implements TaskDAO {
     }
 
     @Override
-    public List<Task> getTasks(TaskSearchRequest request) {
+    public TaskContainer searchTasks(TaskSearchRequest request, Long userId) {
         log.debug("Getting task by TaskSearchRequest {}", request);
-        if(!StringUtils.hasText(request.getAssignedTo())) {
-            return Collections.emptyList();
+        if(Objects.isNull(userId) || Objects.isNull(request)) {
+            return null;
         }
         StringBuilder sql = new StringBuilder("SELECT id, title, description, status, priority, due_date, ")
                 .append("assigned_to, updated_at FROM user_tasks WHERE assigned_to=:assignedTo");
+        StringBuilder countSql = new StringBuilder("SELECT count(*) FROM user_tasks WHERE assigned_to=:assignedTo");
 
         Map<String, Object> sqlParams = new HashMap<>();
-        sqlParams.put("assignedTo", request.getAssignedTo());
+        sqlParams.put("assignedTo", userId);
         //build search query
-        QueryUtil.buildSearchQuery(request, sql, sqlParams);
+
+        StringBuilder searchCritBuilder = new StringBuilder();
+        QueryUtil.buildSearchQuery(request, searchCritBuilder, sqlParams);
+        sql.append(searchCritBuilder.toString());
+        countSql.append(searchCritBuilder.toString());
         //build sort order
         QueryUtil.buildSortOrder(request, sql);
         // Pagination
         sql.append(" LIMIT :limit OFFSET :offset");
         sqlParams.put("limit", request.getLimit());
         sqlParams.put("offset", request.getStartIndex());
-        return jdbcTemplate.query(sql.toString(), sqlParams, rowMapper);
+        List<Task> tasks = jdbcTemplate.query(sql.toString(), sqlParams, rowMapper);
+        TaskContainer taskContainer = new TaskContainer();
+        taskContainer.setItems(tasks);
+        if(!CollectionUtils.isEmpty(tasks)) {
+            long count = jdbcTemplate.queryForObject(countSql.toString(), sqlParams, Long.class);
+            taskContainer.setTotalCount(count);
+        }
+        return taskContainer;
     }
 
 
 
     @Override
     public Task createTask(Task task) {
-        if (task == null || !StringUtils.hasText(task.getAssignedTo())) {
+        if (task == null) {
             return null;
         }
         String sql = "INSERT INTO user_tasks (title, description, status, priority, due_date, assigned_to) "
@@ -119,19 +133,6 @@ public class TaskDAOImpl implements TaskDAO {
         //soft delete
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
-        params.put("deleted", true);
-        int updatedRows = jdbcTemplate.update(DELETE_SQL, params);
-        return updatedRows>0;
-    }
-
-    @Override
-    public boolean activateTask(Long id) {
-        if (id == null) {
-            return false;
-        }
-        Map<String, Object> params = new HashMap<>();
-        params.put("id", id);
-        params.put("deleted", false);
         int updatedRows = jdbcTemplate.update(DELETE_SQL, params);
         return updatedRows>0;
     }
@@ -147,7 +148,6 @@ public class TaskDAOImpl implements TaskDAO {
         task.setPriority(priorityStr != null ? TaskPriority.valueOf(priorityStr) : null);
         Timestamp due = rs.getTimestamp("due_date");
         task.setDueDate(due != null ? due.toLocalDateTime() : null);
-        task.setAssignedTo(rs.getString("assigned_to"));
         Timestamp updatedAtTs = rs.getTimestamp("updated_at");
         task.setUpdatedAt(updatedAtTs != null ? updatedAtTs.toLocalDateTime() : null);
         return task;

@@ -3,14 +3,14 @@ package com.nextgen.platform.task.service;
 import com.nextgen.platform.audit.service.TaskEventService;
 import com.nextgen.platform.task.dao.TaskDAO;
 import com.nextgen.platform.task.domain.Task;
+import com.nextgen.platform.task.domain.TaskContainer;
 import com.nextgen.platform.task.dto.TaskSearchRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.springframework.util.SerializationUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.InvalidParameterException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,21 +33,20 @@ public class TaskService {
        }
        Task createdTask = taskDAO.createTask(task);
        if(Objects.nonNull(createdTask)) {
-           taskEventService.recordCreated(task.getAssignedTo(),
+           taskEventService.recordCreated(task.getAssignedTo().toString(),
                    createdTask.getId().toString(),
                    createTaskDetail(createdTask));
        }
        return createdTask;
     }
 
-    public Task updateTask(Long id, Task task) {
-       if(Objects.isNull(id) || Objects.isNull(task)){
+    public Task updateTask(Task task) {
+       if(Objects.isNull(task)){
           return null;
        }
-        task.setId(id);
         Task updatedTask =  taskDAO.updateTask(task);
         if(Objects.nonNull(updatedTask)) {
-            taskEventService.recordUpdated(task.getAssignedTo(),
+            taskEventService.recordUpdated(task.getAssignedTo().toString(),
                     updatedTask.getId().toString(),
                     createTaskDetail(updatedTask));
         }
@@ -61,18 +60,15 @@ public class TaskService {
        return  taskDAO.getTaskById(id);
     }
 
-    public List<Task> getTasks(TaskSearchRequest request) {
-        if(Objects.isNull(request)) {
-            return Collections.emptyList();
+    public TaskContainer searchTasks(TaskSearchRequest request, Long userId) {
+        if(Objects.isNull(userId) || Objects.isNull(request)) {
+            return null;
         }
-        if(!StringUtils.hasText(request.getAssignedTo())) {
-            throw new InvalidParameterException("Missing input parameter: assignedTo");
-        }
-       return taskDAO.getTasks(request);
+       return taskDAO.searchTasks(request, userId);
     }
 
 
-    public boolean deleteTask(Long id) {
+    public boolean deleteTask(Long id, Long userId) {
         log.debug("Delete task with id {}", id);
         //get the task to publish audit events
         Task task = taskDAO.getTaskById(id);
@@ -81,21 +77,9 @@ public class TaskService {
         }
         boolean isDeleted = taskDAO.deleteTask(id);
         if(isDeleted) {
-            taskEventService.recordDeleted(task.getAssignedTo(), id.toString());
+            taskEventService.recordDeleted(userId.toString(), id.toString(), createTaskDetail(task));
         }
         return isDeleted;
-    }
-
-    public boolean activateTask(Long id) {
-        log.debug("Activate task with id {}", id);
-        boolean isActivated = taskDAO.activateTask(id);
-        if(isActivated) {
-            Task task = taskDAO.getTaskById(id);
-            if(Objects.nonNull(task)) {
-                taskEventService.recordActivated(task.getAssignedTo(), id.toString());
-            }
-        }
-        return isActivated;
     }
 
     private static Map<String, String> createTaskDetail(Task createdTask) {

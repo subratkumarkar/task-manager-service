@@ -10,6 +10,6 @@ public interface UserDAO {
     User getUserById(Long id);
     User createUser(User user);
     boolean deleteUser(Long id);
-    Pair<String, String> getUserEmailAndPasswordHash(String email);
+    User getUserAuthInfo(String email);
     boolean updateLastLoginTime(String email);
 }

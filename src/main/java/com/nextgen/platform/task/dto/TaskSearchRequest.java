@@ -8,12 +8,9 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
-public class TaskSearchRequest {
-    //Must have fields. Task search is by logged on user
-    private String assignedTo;
+public class TaskSearchRequest extends BaseTaskDto{
     // Pagination
     private int limit = 20; //default page size
     private int startIndex = 0;//default start from index
@@ -22,12 +19,6 @@ public class TaskSearchRequest {
     private SortByField sortBy = SortByField.priority; // default sort by field
     private SortOrder sortDirection = SortOrder.DESC; //default sort order
 
-    //Filter fields
-    private String title;
-    private String description;
-    private TaskStatus status;
-    private TaskPriority priority;
-    private LocalDateTime dueDate;
     private LocalDateTime fromUpdatedAt;
     private LocalDateTime toUpdatedAt;
 }

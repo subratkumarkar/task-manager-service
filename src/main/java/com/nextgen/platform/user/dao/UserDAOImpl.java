@@ -3,6 +3,7 @@ package com.nextgen.platform.user.dao;
 import com.nextgen.platform.user.domain.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.util.Pair;
 import org.springframework.jdbc.core.RowMapper;
@@ -41,7 +42,11 @@ public class UserDAOImpl implements UserDAO {
         params.put("email", user.getEmail());
         params.put("passwordHash",passwordEncoder.encode(user.getPassword()));
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder);
+        try {
+            jdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder);
+        }catch (DuplicateKeyException ex){
+            return null;
+        }
         if (keyHolder.getKey() != null) {
             user.setId(keyHolder.getKey().longValue());
         }
@@ -79,23 +84,19 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public Pair<String, String> getUserEmailAndPasswordHash(String email) {
+    public User getUserAuthInfo(String email) {
         if (!StringUtils.hasText(email)) {
             return null;
         }
-        String sql = "SELECT email, password_hash FROM users WHERE email = :email";
+        String sql = "SELECT id, email, password_hash FROM users WHERE email = :email";
 
         Map<String, Object> params = new HashMap<>();
         params.put("email", email);
         try {
-            Map<String, Object> response = jdbcTemplate.queryForMap(sql, params);
-             if(response!=null && response.containsKey("password_hash")) {
-                 return Pair.of(email, (String)response.get("password_hash"));
-             }
+           return jdbcTemplate.queryForObject(sql, params, userInfoMapper);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
-        return null;
     }
 
     @Override
@@ -116,10 +117,18 @@ public class UserDAOImpl implements UserDAO {
         User user = new User();
         user.setId(rs.getLong("id"));
         user.setFirstName(rs.getString("first_name"));
-        user.setLastName(rs.getString("last_name"));
+        user.setLastName( rs.getString("last_name"));
         user.setEmail(rs.getString("email"));
         Timestamp lastLoginAt = rs.getTimestamp("last_login_at");
         user.setLastLoginAt(lastLoginAt != null ? lastLoginAt.toLocalDateTime() : null);
+        return user;
+    };
+
+    private final RowMapper<User> userInfoMapper = (rs, rowNum) -> {
+        User user = new User();
+        user.setId(rs.getLong("id"));
+        user.setEmail(rs.getString("email"));
+        user.setPassword(rs.getString("password_hash"));
         return user;
     };
 }

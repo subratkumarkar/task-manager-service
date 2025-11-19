@@ -1,16 +1,16 @@
-package com.nextgen.platform.task.domain;
+package com.nextgen.platform.task.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.nextgen.platform.task.domain.TaskPriority;
+import com.nextgen.platform.task.domain.TaskStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;
-
 @Getter
 @Setter
-@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
-public class Task {
+public class BaseTaskDto {
     private Long id;
     private String title;
     private String description;
@@ -18,6 +18,4 @@ public class Task {
     private TaskPriority priority;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm[:ss]")
     private LocalDateTime dueDate;
-    private Long assignedTo;
-    private LocalDateTime updatedAt;
 }

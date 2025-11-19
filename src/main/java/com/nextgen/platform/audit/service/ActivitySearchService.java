@@ -1,6 +1,7 @@
 package com.nextgen.platform.audit.service;
 
 import com.nextgen.platform.audit.dao.TaskEventDAO;
+import com.nextgen.platform.audit.dto.ActivitySearchResponse;
 import com.nextgen.platform.audit.model.TaskEvent;
 import com.nextgen.platform.audit.model.UserActivity;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +19,13 @@ public class ActivitySearchService {
     @Autowired
     private TaskEventDAO taskEventDAO;
 
-    public List<UserActivity> getUserEvents(String userId, int limit, String lastKey) {
+    public ActivitySearchResponse getUserEvents(String userId, int limit, String lastKey) {
+        ActivitySearchResponse activitySearchResponse = new ActivitySearchResponse();
         List<TaskEvent> taskEvents = taskEventDAO.findEventsByUser(userId, limit, lastKey);
         if(CollectionUtils.isEmpty(taskEvents)) {
-            return Collections.emptyList();
+            return activitySearchResponse;
         }
-       return taskEvents.stream().map(taskEvent -> {
+       List<UserActivity> userActivities = taskEvents.stream().map(taskEvent -> {
             UserActivity userEvent = new UserActivity();
             userEvent.setActivityTime(taskEvent.getEventTime());
             userEvent.setEventType(taskEvent.getEventType());
@@ -36,6 +38,9 @@ public class ActivitySearchService {
             }
             return userEvent;
         }).collect(Collectors.toList());
+        activitySearchResponse.setItems(userActivities);
+        activitySearchResponse.setTotalCount(taskEventDAO.countEventsByUser(userId));
+        return activitySearchResponse;
     }
 }
 
