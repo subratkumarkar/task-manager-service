@@ -1,5 +1,6 @@
 # task-manager-service
 Manages Task lifecycle.
+This is the backend for task-manager-web.
 
 User can create personal tasks in the dashboard
 after creating an account and logging in.
