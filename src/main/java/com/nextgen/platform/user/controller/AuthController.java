@@ -33,6 +33,7 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User request) {
+        log.info("login request received");
         User user = userService.authenticate(request);
         if (user == null) {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
@@ -48,6 +49,7 @@ public class AuthController {
      */
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody User user) {
+        log.info("Signup request received");
         if(Objects.isNull(user) || !StringUtils.hasText(user.getEmail()) || !StringUtils.hasText(user.getPassword())) {
             return ResponseEntity.badRequest().body(Map.of("error", "Bad Input"));
         }

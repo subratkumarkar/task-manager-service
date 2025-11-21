@@ -11,12 +11,17 @@ public class CorsConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "http://localhost:3000",
-                        "http://localhost:3001"
+                        "http://localhost:3001",
+                        "http://coursera-alb-1571933611.us-east-2.elb.amazonaws.com",
+                        "https://coursera-alb-1571933611.us-east-2.elb.amazonaws.com"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true);
+                .exposedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(3600);
     }
 }
+
 
 
