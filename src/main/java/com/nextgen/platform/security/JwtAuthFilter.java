@@ -25,15 +25,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
-        boolean shouldFiler = path.startsWith("/api/auth") || path.startsWith("/api/v1/auth")
+        boolean shouldNotFiler = path.startsWith("/api/auth") || path.startsWith("/api/v1/auth")
                  || path.equals("/actuator/health");
-        log.info("Request received for path {}, shouldFiler {}", path, shouldFiler);
-        return shouldFiler;
+        log.info("Request received for path {}, shouldNotFiler {}", path, shouldNotFiler);
+        return shouldNotFiler;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        log.info("Filtering request for path {}", request.getServletPath());
         String header = request.getHeader("Authorization");
         if (header == null || !header.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
