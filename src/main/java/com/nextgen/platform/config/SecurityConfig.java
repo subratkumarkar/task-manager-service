@@ -33,6 +33,8 @@ public class SecurityConfig {
                         // Public endpoints
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/health").permitAll()
                         // CORS preflight calls
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // Everything else requires authentication
