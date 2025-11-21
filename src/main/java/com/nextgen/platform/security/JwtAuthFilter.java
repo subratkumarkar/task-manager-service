@@ -28,6 +28,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         boolean shouldFiler = path.startsWith("/api/auth") || path.startsWith("/api/v1/auth")
                  || path.equals("/actuator/health");
         log.info("Request received for path {}, shouldFiler {}", path, shouldFiler);
+        return shouldFiler;
     }
 
     @Override
