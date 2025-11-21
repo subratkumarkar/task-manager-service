@@ -27,14 +27,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         boolean shouldNotFiler = path.startsWith("/api/auth") || path.startsWith("/api/v1/auth")
                  || path.equals("/actuator/health");
-        log.info("Request received for path {}, shouldNotFiler {}", path, shouldNotFiler);
+        log.debug("Request received for path {}, shouldNotFiler {}", path, shouldNotFiler);
         return shouldNotFiler;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        log.info("Filtering request for path {}", request.getServletPath());
+        log.debug("Filtering request for path {}", request.getServletPath());
         String header = request.getHeader("Authorization");
         if (header == null || !header.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
