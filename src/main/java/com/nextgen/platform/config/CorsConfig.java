@@ -13,7 +13,9 @@ public class CorsConfig implements WebMvcConfigurer {
                         "http://localhost:3000",
                         "http://localhost:3001",
                         "http://coursera-alb-1571933611.us-east-2.elb.amazonaws.com",
-                        "https://coursera-alb-1571933611.us-east-2.elb.amazonaws.com"
+                        "https://coursera-alb-1571933611.us-east-2.elb.amazonaws.com",
+                        "http://task-manger-service-alb-666574350.us-east-2.elb.amazonaws.com",
+                        "https://task-manger-service-alb-666574350.us-east-2.elb.amazonaws.com"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
