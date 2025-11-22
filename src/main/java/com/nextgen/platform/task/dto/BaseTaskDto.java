@@ -16,6 +16,4 @@ public class BaseTaskDto {
     private String description;
     private TaskStatus status;
     private TaskPriority priority;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm[:ss]")
-    private LocalDateTime dueDate;
 }

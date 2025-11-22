@@ -21,4 +21,7 @@ public class TaskSearchRequest extends BaseTaskDto{
 
     private LocalDateTime fromUpdatedAt;
     private LocalDateTime toUpdatedAt;
+
+    private LocalDateTime fromDueDate;
+    private LocalDateTime toDueDate;
 }

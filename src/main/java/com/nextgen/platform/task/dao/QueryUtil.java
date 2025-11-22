@@ -31,9 +31,13 @@ public class QueryUtil {
             sql.append(" AND (description LIKE :description)");
             sqlParams.put("description", "%" + request.getDescription() + "%");
         }
-        if (request.getDueDate() != null) {
-            sql.append(" AND due_date = :dueDate");
-            sqlParams.put("dueDate", Timestamp.valueOf(request.getDueDate()));
+        if (request.getFromDueDate() != null) {
+            sql.append(" AND due_date >= :fromDueDate");
+            sqlParams.put("fromDueDate", Timestamp.valueOf(request.getFromDueDate()));
+        }
+        if (request.getToDueDate() != null) {
+            sql.append(" AND due_date <= :toDueDate");
+            sqlParams.put("toDueDate", Timestamp.valueOf(request.getToDueDate()));
         }
         if (request.getFromUpdatedAt() != null) {
             sql.append(" AND updated_at >= :modifiedFrom");

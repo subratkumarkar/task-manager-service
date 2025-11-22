@@ -11,4 +11,6 @@ import java.time.LocalDateTime;
 public class TaskResponse extends BaseTaskDto {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm[:ss]")
     private LocalDateTime updatedAt;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm[:ss]")
+    private LocalDateTime dueDate;
 }
