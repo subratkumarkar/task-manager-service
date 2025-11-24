@@ -69,7 +69,7 @@ public class TaskService {
 
 
     public boolean deleteTask(Long id, Long userId) {
-        log.debug("Delete task with id {}", id);
+        log.info("Delete task with id {}", id);
         //get the task to publish audit events
         Task task = taskDAO.getTaskById(id);
         if(Objects.isNull(task)) {
@@ -77,6 +77,8 @@ public class TaskService {
         }
         boolean isDeleted = taskDAO.deleteTask(id);
         if(isDeleted) {
+            Map map = createTaskDetail(task);
+            log.info("Delete task with task {}", map);
             taskEventService.recordDeleted(userId.toString(), id.toString(), createTaskDetail(task));
         }
         return isDeleted;
