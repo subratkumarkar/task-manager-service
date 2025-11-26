@@ -16,7 +16,7 @@ public class JwtService {
     private String SECRET;
 
     // Move to env variable in production
-    private static final long EXPIRATION = 24 * 60 * 60 * 1000; // 24 hours
+    private static final long EXPIRATION = 2 * 60 * 60 * 1000; // 2 hours
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET.getBytes());
